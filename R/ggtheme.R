@@ -1,3 +1,10 @@
+#' Change active `ggplot2` theme and default color palettes
+#'
+#' @return `NULL`
+#' @export
+#'
+#' @examples
+#' ggtheme()
 ggtheme <- function(){
   library(ggplot2)
   theme_set(theme_bw())
