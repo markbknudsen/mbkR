@@ -1,0 +1,10 @@
+Package: mbkR
+Title: Personal collection of useful R code.
+Version: 0.0.0.9000
+Authors@R: 
+    person(c("Mark", "Bech"), "Knudsen", role = c("aut", "cre"))
+Description: Contains convenient functions or definitions that I do not want to copy-paste into every new project that I make..
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
