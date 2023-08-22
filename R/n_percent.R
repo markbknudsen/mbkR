@@ -1,3 +1,19 @@
+#' Formatted count and percent of levels
+#'
+#' @param x A vector, usually factor or character.
+#' @param digits Number of digits to use when formatting percentages.
+#' @param NA.show Boolean. Whether to show count of missing values.
+#' @param NA.name Name of row with count of missing values.
+#'
+#' @return A data.table with a column containing names of levels
+#' and a column containing characters of the format `"n (pct%)"` where
+#' `n` is the count of the level and `pct` is the percentage.
+#' @import data.table
+#' @export
+#'
+#' @examples
+#' x <- c("A", "A", "B", "C")
+#' n_percent(x)
 n_percent <- function(
     x,
     digits = 0,
@@ -5,40 +21,24 @@ n_percent <- function(
     NA.name = "Missing"
 ){
   if(is.factor(x)) levs <- levels(x)
-  else if(is.character(x)) levs <- unique(x)
-  else stop("x must be factor or character.")
-
-  count_level <- function(bool_vec){
-    s <- sum(bool_vec)
-    paste0(
-      s,
-      if(s == 0) NULL
-      else{
-        paste0(
-          " (",
-          format_elementwise(s / length(bool_vec) * 100, digits = digits),
-          "%)"
-        )
-      }
-    )
-  }
+  else levs <- unique(x)
 
   res <- lapply(
     levs,
     function(level){
-      data.table::data.table(
+      data.table(
         .level = level,
-        count_level(ifelse(is.na(x), 0, x == level))
+        count_binary(ifelse(is.na(x), 0, x == level))
       )
     }
-  ) |> data.table::rbindlist()
+  ) |> rbindlist()
 
   if(NA.show & any(is.na(x))){
     res <- rbind(
       res,
-      data.table::data.table(
+      data.table(
         .level = NA.name,
-        count_level(is.na(x))
+        count_binary(is.na(x), digits = digits)
       )
     )
     levs <- c(levs, NA.name)

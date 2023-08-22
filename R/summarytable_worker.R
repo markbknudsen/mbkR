@@ -1,3 +1,13 @@
+#' Helper for summarytable
+#'
+#' @param data,.by,default.numeric,default.factor,flatten.by.sep,total.column,total.name,indent.char See `summarytable()`.
+#' @param ex An expression to evaluate in `data`. The RHS of an argument of `...`
+#' in a call to summarytable.
+#' @param ex_name Character of length 1. The LHS of an argument of `...` in
+#' a call to summarytable.
+#'
+#' @return A data.table.
+#' @import data.table
 summarytable_worker <- function(
     data,
     ex,
@@ -5,11 +15,12 @@ summarytable_worker <- function(
     .by = NULL,
     default.numeric = mean_sd,
     default.factor = n_percent,
-    sep = ", ",
+    flatten.by.sep = ", ",
     total.column = is.null(.by),
-    total.name = "Total"
+    total.name = "Total",
+    indent.char = "  "
 ){
-  if(!data.table::is.data.table(data)) stop("data must be a data.table.")
+  if(!is.data.table(data)) stop("data must be a data.table.")
   if(!total.column & is.null(.by)) stop("If .by is NULL, total.column must be TRUE.")
   else if(total.column & !is.null(.by)) stop("If total.column is TRUE then .by must be NULL.")
 
@@ -34,23 +45,26 @@ summarytable_worker <- function(
 
   # Add result of calculation
   res <- data[, eval(ex), by = .by]
+  ncol_identifier <- ncol(res) - length(.by) - 1
   names(res)[ncol(res)] <- ex_name
 
-  # If the result contains more than 1 cell per group in .by, there must be a .level column to identify rows.
+  # Change everything not factor or character to character
+  res[, names(res) := lapply(.SD, function(x) if(!is.character(x) & !is.factor(x)) as.character(x) else x)]
+
+  # If the result contains more than 1 cell per group in .by, there must be a one or more columns to identify rows.
   if(res[, .(.bysize = .N), by = .by][, any(.bysize > 1)]){
-    if(ncol(res) != length(.by) + 2) stop("Call ", ex_char, " returned more than 1 value per group in .by, but did not return a data.frame with 2 columns. In this case please return a data.frame with two columns: the first being named '.level', containing a unique identifier for each row (e.g. group levels) and the second one the value of interest (name irrelevant).")
-    else if(names(res)[length(.by) + 1] != ".level") stop("Call ", ex_char, " returned a data.frame with 2 columns, but the first was not named '.level'")
+    if(ncol_identifier == 0) stop("Call ", ex_char, " returned more than 1 value per group in .by, but did not return a data.frame with at least 2 columns. In this case please return a data.frame with at least two columns: the first ncol columns containing a unique identifier for each row (e.g. group levels) and the last one the value of interest.")
   }
   # If creating total column, create dummy column .total for use with .by
   if(total.column){
     res[, .total := total.name]
-    data.table::setcolorder(res, ".total")
+    setcolorder(res, ".total")
     .by <- ".total"
   }
-  # If result only contains 1 value, add dummy .level column
-  if(ncol(res) == length(.by) + 1){
-    res[, .level := ""]
-    data.table::setcolorder(
+  # If result contains no identifier, add dummy .level column
+  if(ncol_identifier == 0){
+    res[, .level := as.character(NA)]
+    setcolorder(
       res,
       c(
         if(length(.by) > 0){
@@ -60,28 +74,75 @@ summarytable_worker <- function(
         ex_name
       )
     )
+    ncol_identifier <- 1
   }
 
   # Cast according to .by
-  res <- data.table::dcast(
+  res <- dcast(
     res,
     formula(
       paste0(
-        ".level ~ ",
+        paste0(colnames(res)[(length(.by) + 1):(ncol(res) - 1)], collapse = " + "),
+        " ~ ",
         paste0(.by, collapse = " + ")
       )
     ),
     value.var = ex_name,
-    drop = FALSE,
-    sep = sep
+    drop = c(TRUE, FALSE),
+    sep = flatten.by.sep
   )
 
-  # If one row, change rowname to expression name
-  if(nrow(res) == 1){
-    res[, .level := ex_name]
+  ncol_by <- ncol(res) - ncol_identifier
+
+  # Recursive helper function for formatting multiple identifier columns
+  hierarchy_helper <- function(res_df, hierarchy_level){
+    levs_name <- colnames(res_df)[1]
+    # Indent according to hierarchy
+    if(!(res_df[, is.na(get(levs_name)[1])] & nrow(res_df) == 1)){
+      res_df[][
+        if(is.na(get(levs_name)[1])) 2:nrow(res_df) else 1:nrow(res_df),
+        eval(levs_name) := paste0(
+          paste0(rep(indent.char, hierarchy_level), collapse = ""),
+          get(levs_name)
+        )
+      ]
+    }
+
+    # Stopping condition
+    if(ncol(res_df) == (ncol_by + 1)){
+      colnames(res_df)[1] <- ".level"
+      return(res_df)
+    }
+
+    # Respect factor levels if possible
+    if(is.factor(res_df[, 1])) levs <- res_df[, levels(get(levs_name))]
+    else levs <- res_df[, unique(get(levs_name))]
+
+    lapply(
+      levs,
+      function(l){
+        tmp_dt <- data.table(l)
+        names(tmp_dt)[1] <- ".level"
+        tmp_dt <- rbind(
+          tmp_dt,
+          hierarchy_helper(res_df[res_df[, get(levs_name)] == l, 2:ncol(res_df)], hierarchy_level = hierarchy_level + 1),
+          fill = TRUE
+        )
+        tmp_dt[1, 2:ncol(tmp_dt) := ""]
+      }
+    ) |>
+      rbindlist()
   }
-  # If more than one row, add empty row on top with expression name
-  if(nrow(res) > 1){
+
+  # Make the result only have 1 identifier column
+  res <- hierarchy_helper(res, hierarchy_level = 1)
+
+  # If first row has NA identifier, give it expression name as rowname
+  if(res[1, is.na(.level)]){
+    res[1, .level := ex_name]
+  }
+  # If not, add empty row on top with expression name
+  else{
     res <- rbind(
       data.table(.level = ex_name),
       res,
@@ -92,3 +153,4 @@ summarytable_worker <- function(
 
   res
 }
+
