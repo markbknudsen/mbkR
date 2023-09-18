@@ -35,7 +35,7 @@ mean_sd <- function(
     ")"
   )
 
-  if(NA.show){
+  if(NA.show & any(is.na(x))){
     res <- rbind(
       data.table(res)[, .level := NA],
       data.table(
