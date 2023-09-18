@@ -197,12 +197,15 @@ summarytable <- function(
           if(!is.null(N.row.expr) & N.row.header){
             header_names <- paste0(col_levs, " (", N.row.name, "=", N.row.values, ")")
           }
+          else{
+            header_names <- col_levs
+          }
         }
         flextab <- flextab |>
           flextable::add_header_row(values = c("", col_levs), colwidths = rep(1, ncol(tab)), top = FALSE)
       }
       flextab <- flextab |>
-        flextable::merge_h(part = "header") |>
+        flextable::merge_h(part = "header", i = 1:(flextable::nrow_part(flextab, part = "header") - 1)) |>
         flextable::align(i = 1:(length(.by) - 1), align = "center", part = "header")
     }
 

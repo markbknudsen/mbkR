@@ -88,7 +88,7 @@ summarytable_worker <- function(
       )
     ),
     value.var = ex_name,
-    drop = c(TRUE, FALSE),
+    drop = TRUE,
     sep = flatten.by.sep
   )
 
