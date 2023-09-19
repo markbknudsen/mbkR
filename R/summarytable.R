@@ -45,6 +45,7 @@
 #' to give rather ugly results when saving to .docx format.
 #' @param color.cells Character. Color to apply to cells of alternating subtables.
 #' Set `NULL` or `FALSE` for no coloring.
+#' @param autofit Whether automatically resize the table. If `TRUE`, newlines will be ignored.
 #' @param return.list Boolean. If `TRUE`, the function will return a list data.tables
 #' instead of a formatted flextable.
 #'
@@ -116,6 +117,7 @@ summarytable <- function(
     variable.name = "",
     indent.char = "  ",
     color.cells = "lightgrey",
+    autofit = TRUE,
     return.list = FALSE
 ){
   if(!is.data.table(data)) data <- data.table(data)
@@ -251,8 +253,10 @@ summarytable <- function(
       flextable::border_outer()
 
     # Layout
-    flextab <- flextab |>
-      flextable::set_table_properties(layout = "autofit")
+    if(autofit){
+      flextab <- flextab |>
+        flextable::set_table_properties(layout = "autofit")
+    }
 
     flextab
   }
