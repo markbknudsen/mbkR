@@ -43,6 +43,8 @@
 #' @param indent.char Character of length 1. Character to indent sublevels of table by.
 #' Default is two spaces (`"  "`), use `"\t"` for a tab character, although this seems
 #' to give rather ugly results when saving to .docx format.
+#' @param color.cells Character. Color to apply to cells of alternating subtables.
+#' Set `NULL` or `FALSE` for no coloring.
 #' @param return.list Boolean. If `TRUE`, the function will return a list data.tables
 #' instead of a formatted flextable.
 #'
@@ -113,6 +115,7 @@ summarytable <- function(
     total.name = "Total",
     variable.name = "",
     indent.char = "  ",
+    color.cells = "lightgrey",
     return.list = FALSE
 ){
   if(!is.data.table(data)) data <- data.table(data)
@@ -210,22 +213,18 @@ summarytable <- function(
     }
 
     # For each subtable
-    n_rows <- 1
-    for(i in seq_along(.tabs)){
-      n_row_i <- nrow(.tabs[[i]])
+    if(!is.null(color.cells) & !isFALSE(color.cells)){
+      n_rows <- 1
+      for(i in seq_along(.tabs)){
+        n_row_i <- nrow(.tabs[[i]])
 
-      # Indent subtables with more than 1 row
-      # Done in summarytable.worker now
-      # if(n_row_i > 1){
-      #   flextab <- flextab |>
-      #     flextable::prepend_chunks(i = (n_rows + 1):(n_rows + n_row_i - 1), j = 1, flextable::as_chunk(indent.char))
-      # }
-      # Apply background color to alternating subtables
-      if(i %% 2 == 1){
-        flextab <- flextab |>
-          flextable::bg(i = n_rows:(n_rows + n_row_i - 1), bg = "lightgrey")
+        # Apply background color to alternating subtables
+        if(i %% 2 == 1){
+          flextab <- flextab |>
+            flextable::bg(i = n_rows:(n_rows + n_row_i - 1), bg = color.cells)
+        }
+        n_rows <- n_rows + nrow(.tabs[[i]])
       }
-      n_rows <- n_rows + nrow(.tabs[[i]])
     }
 
     # Change the label of the leftmost column, and possibly add N.row
