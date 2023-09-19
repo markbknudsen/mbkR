@@ -45,6 +45,7 @@
 #' to give rather ugly results when saving to .docx format.
 #' @param color.cells Character. Color to apply to cells of alternating subtables.
 #' Set `NULL` or `FALSE` for no coloring.
+#' @param border.inner.v,border.inner.h Whether to add inner vertical and horizontal rules.
 #' @param autofit Whether automatically resize the table. If `TRUE`, newlines will be ignored.
 #' @param return.list Boolean. If `TRUE`, the function will return a list data.tables
 #' instead of a formatted flextable.
@@ -117,6 +118,8 @@ summarytable <- function(
     variable.name = "",
     indent.char = "  ",
     color.cells = "lightgrey",
+    border.inner.v = TRUE,
+    border.inner.h = TRUE,
     autofit = TRUE,
     return.list = FALSE
 ){
@@ -245,8 +248,14 @@ summarytable <- function(
       flextable::hline_bottom(part = "header", border = officer::fp_border(width = 1))
 
     # Inner borders
-    flextab <- flextab |>
-      flextable::border_inner(part = "all", border = officer::fp_border(color = "gray"))
+    if(border.inner.v){
+      flextab <- flextab |>
+        flextable::border_inner_v(part = "all", border = officer::fp_border(color = "gray"))
+    }
+    if(border.inner.h){
+      flextab <- flextab |>
+        flextable::border_inner_h(part = "all", border = officer::fp_border(color = "gray"))
+    }
 
     # Outer border of table
     flextab <- flextab |>
