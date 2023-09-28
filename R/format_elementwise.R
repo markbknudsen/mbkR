@@ -20,7 +20,7 @@ format_elementwise <- function(
   sapply(
     x,
     \(y) format(
-      ifelse(abs(y) >= 1, round(y, digits = digits), signif(y, digits = digits + floor(log10(abs(y))))),
+      ifelse(abs(y) >= 1, round(y, digits = digits), signif(y, digits = digits)),
       nsmall = ifelse(abs(y) >= 1, digits, digits + ceiling(-log10(abs(y))) - 1),
       scientific = scientific,
       ...)
