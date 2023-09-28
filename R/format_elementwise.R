@@ -1,11 +1,11 @@
-#' Apply `format` elementwise
+#' Round numbers to a certain number of significant decimals.
 #'
 #' @param x A vector.
-#' @param digits Number of digits after the decimal place.
+#' @param digits Number of significant digits after the decimal place.
 #' @param scientific Boolean. as in [format()].
 #' @param ... Arguments passed to [format()].
 #'
-#' @return `x` after applying format elementwise.
+#' @return `x` as a character rounded to `digits` significant decimal places.
 #' @export
 #'
 #' @examples
@@ -17,5 +17,12 @@ format_elementwise <- function(
   scientific = FALSE,
   ...
 ){
-  sapply(x, \(y) format(round(y, digits = digits), nsmall = digits, scientific = scientific, ...))
+  sapply(
+    x,
+    \(y) format(
+      ifelse(abs(y) >= 1, round(y, digits = digits), signif(y, digits = digits + floor(log10(abs(y))))),
+      nsmall = ifelse(abs(y) >= 1, digits, digits + ceiling(-log10(abs(y))) - 1),
+      scientific = scientific,
+      ...)
+    )
 }
