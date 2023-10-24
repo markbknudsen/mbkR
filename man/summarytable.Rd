@@ -19,6 +19,10 @@ summarytable(
   total.name = "Total",
   variable.name = "",
   indent.char = "  ",
+  color.cells = "lightgrey",
+  border.inner.v = TRUE,
+  border.inner.h = TRUE,
+  autofit = TRUE,
   return.list = FALSE
 )
 }
@@ -62,6 +66,13 @@ it controls if an column is added for the unstratified data (\code{TRUE}) or not
 \item{indent.char}{Character of length 1. Character to indent sublevels of table by.
 Default is two spaces (\code{"  "}), use \code{"\\t"} for a tab character, although this seems
 to give rather ugly results when saving to .docx format.}
+
+\item{color.cells}{Character. Color to apply to cells of alternating subtables.
+Set \code{NULL} or \code{FALSE} for no coloring.}
+
+\item{border.inner.v, border.inner.h}{Whether to add inner vertical and horizontal rules.}
+
+\item{autofit}{Whether automatically resize the table. If \code{TRUE}, newlines will be ignored.}
 
 \item{return.list}{Boolean. If \code{TRUE}, the function will return a list data.tables
 instead of a formatted flextable.}

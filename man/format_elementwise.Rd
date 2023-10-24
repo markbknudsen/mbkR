@@ -2,24 +2,24 @@
 % Please edit documentation in R/format_elementwise.R
 \name{format_elementwise}
 \alias{format_elementwise}
-\title{Apply \code{format} elementwise}
+\title{Round numbers to a certain number of significant decimals.}
 \usage{
 format_elementwise(x, digits, scientific = FALSE, ...)
 }
 \arguments{
 \item{x}{A vector.}
 
-\item{digits}{Number of digits after the decimal place.}
+\item{digits}{Number of significant digits after the decimal place.}
 
 \item{scientific}{Boolean. as in \code{\link[=format]{format()}}.}
 
 \item{...}{Arguments passed to \code{\link[=format]{format()}}.}
 }
 \value{
-\code{x} after applying format elementwise.
+\code{x} as a character rounded to \code{digits} significant decimal places.
 }
 \description{
-Apply \code{format} elementwise
+Round numbers to a certain number of significant decimals.
 }
 \examples{
 x <- c(11, 1, 1.1, 1.11, 1.111111111)

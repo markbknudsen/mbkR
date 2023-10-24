@@ -21,8 +21,10 @@ format_elementwise <- function(
     x,
     \(y) format(
       ifelse(abs(y) >= 1, round(y, digits = digits), signif(y, digits = digits)),
-      nsmall = ifelse(abs(y) >= 1, digits, digits + ceiling(-log10(abs(y))) - 1),
+      nsmall = ifelse(abs(y) >= 1 | y == 0, digits, digits + ceiling(-log10(abs(y))) - 1),
       scientific = scientific,
-      ...)
+      ...
     )
+  )
 }
+
