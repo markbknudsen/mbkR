@@ -147,7 +147,8 @@ summarytable <- function(
       default.numeric = default.numeric,
       default.factor = default.factor,
       flatten.by.sep = flatten.by.sep,
-      total.name = total.name
+      total.name = total.name,
+      indent.char = indent.char
     )
 
     # Add a total column if needed
@@ -163,7 +164,8 @@ summarytable <- function(
           default.factor = default.factor,
           flatten.by.sep = flatten.by.sep,
           total.column = TRUE,
-          total.name = total.name
+          total.name = total.name,
+          indent.char = indent.char
         )[, .level := NULL]
       )
     }
