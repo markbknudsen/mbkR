@@ -121,14 +121,22 @@ summarytable_worker <- function(
     lapply(
       levs,
       function(l){
-        tmp_dt <- data.table(l)
-        names(tmp_dt)[1] <- ".level"
-        tmp_dt <- rbind(
-          tmp_dt,
-          hierarchy_helper(res_df[res_df[, get(levs_name)] == l, 2:ncol(res_df)], hierarchy_level = hierarchy_level + 1),
-          fill = TRUE
-        )
-        tmp_dt[1, 2:ncol(tmp_dt) := ""]
+        hierarchy_dt <- hierarchy_helper(res_df[get(levs_name) == l, 2:ncol(res_df)], hierarchy_level = hierarchy_level + 1)
+
+        # If one row with NA level, do not indent
+        if(nrow(hierarchy_dt) == 1 & is.na(hierarchy_dt[1,1])){
+          hierarchy_dt[1, 1] <- l
+          hierarchy_dt
+        }
+        else{
+          tmp_dt <- rbind(
+            data.table(.level = l),
+            hierarchy_dt,
+            fill = TRUE
+          )
+          tmp_dt[1, 2:ncol(tmp_dt) := ""]
+          tmp_dt
+        }
       }
     ) |>
       rbindlist()
