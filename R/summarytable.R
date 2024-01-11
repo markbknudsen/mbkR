@@ -27,6 +27,9 @@
 #' each variable in `.by`. If TRUE, will condense these into a single row.
 #' @param flatten.by.sep Character of length 1. If `flatten.by` is `TRUE`, this character
 #' will separate levels of variables in `.by` in the header.
+#' @param .by.NA.drop,.by.NA.name If there are `NA` values in the`.by` columns, a separate column
+#' will be created for rows with missing values when `.by.NA.drop = FALSE`. The name of this column
+#' is controlled by `.by.NA.name`
 #' @param N.row An expression that gives the number observations in each group, which by
 #' default is put in the header.
 #' @param N.row.header Boolean. If TRUE (default), the result of `N.row` is put in the
@@ -108,6 +111,8 @@ summarytable <- function(
     .by = NULL,
     flatten.by = FALSE,
     flatten.by.sep = ", ",
+    .by.NA.drop = FALSE,
+    .by.NA.name = "Missing",
     N.row = .N,
     N.row.header = TRUE,
     N.row.name = "n",
@@ -144,6 +149,8 @@ summarytable <- function(
       ex = .dots[[i]],
       ex_name = names(.dots)[i],
       .by = .by,
+      .by.NA.drop = .by.NA.drop,
+      .by.NA.name = .by.NA.name,
       default.numeric = default.numeric,
       default.factor = default.factor,
       flatten.by.sep = flatten.by.sep,
@@ -160,6 +167,8 @@ summarytable <- function(
           ex = .dots[[i]],
           ex_name = names(.dots)[i],
           .by = NULL,
+          .by.NA.drop = .by.NA.drop,
+          .by.NA.name = .by.NA.name,
           default.numeric = default.numeric,
           default.factor = default.factor,
           flatten.by.sep = flatten.by.sep,

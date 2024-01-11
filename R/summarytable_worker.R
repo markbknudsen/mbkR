@@ -13,6 +13,8 @@ summarytable_worker <- function(
     ex,
     ex_name,
     .by = NULL,
+    .by.NA.drop = FALSE,
+    .by.NA.name = "Missing",
     default.numeric = mean_sd,
     default.factor = n_percent,
     flatten.by.sep = ", ",
@@ -47,6 +49,12 @@ summarytable_worker <- function(
   res <- data[, eval(ex), by = .by]
   ncol_identifier <- ncol(res) - length(.by) - 1
   names(res)[ncol(res)] <- ex_name
+  if(.by.NA.drop & !is.null(.by) & any(res[, is.na(get(.by))])){
+    res <- res[!is.na(get(.by))]
+  }
+  else if(!is.null(.by)){
+    res[is.na(get(.by)), eval(.by) := .by.NA.name]
+  }
 
   # Change everything not factor or character to character
   res[, names(res) := lapply(.SD, function(x) if(!is.character(x) & !is.factor(x)) as.character(x) else x)]
