@@ -116,7 +116,7 @@ summarytable <- function(
     N.row = .N,
     N.row.header = TRUE,
     N.row.name = "n",
-    default.numeric = mean_sd,
+    default.numeric = median_quantiles,
     default.factor = n_percent,
     total.column = FALSE,
     total.name = "Total",
