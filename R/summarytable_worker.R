@@ -28,6 +28,10 @@ summarytable_worker <- function(
 
   ex_char <- as.character(c(ex))
 
+  if(!is.null(.by) & .by.NA.drop){
+    data <- data[!is.na(get(.by))]
+  }
+
   # If expression is column name, apply default method
   if(ex_char %in% names(data)){
 
