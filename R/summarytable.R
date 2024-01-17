@@ -123,7 +123,7 @@ summarytable <- function(
     variable.name = "",
     indent.char = "  ",
     color.cells = "lightgrey",
-    border.inner.v = TRUE,
+    border.inner.v = FALSE,
     border.inner.h = TRUE,
     autofit = TRUE,
     return.list = FALSE
