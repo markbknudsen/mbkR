@@ -10,6 +10,8 @@ summarytable(
   .by = NULL,
   flatten.by = FALSE,
   flatten.by.sep = ", ",
+  .by.NA.drop = FALSE,
+  .by.NA.name = "Missing",
   N.row = .N,
   N.row.header = TRUE,
   N.row.name = "n",
@@ -42,6 +44,10 @@ each variable in \code{.by}. If TRUE, will condense these into a single row.}
 
 \item{flatten.by.sep}{Character of length 1. If \code{flatten.by} is \code{TRUE}, this character
 will separate levels of variables in \code{.by} in the header.}
+
+\item{.by.NA.drop, .by.NA.name}{If there are \code{NA} values in the\code{.by} columns, a separate column
+will be created for rows with missing values when \code{.by.NA.drop = FALSE}. The name of this column
+is controlled by \code{.by.NA.name}}
 
 \item{N.row}{An expression that gives the number observations in each group, which by
 default is put in the header.}

@@ -9,6 +9,8 @@ summarytable_worker(
   ex,
   ex_name,
   .by = NULL,
+  .by.NA.drop = FALSE,
+  .by.NA.name = "Missing",
   default.numeric = mean_sd,
   default.factor = n_percent,
   flatten.by.sep = ", ",

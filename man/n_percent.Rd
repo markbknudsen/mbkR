@@ -4,14 +4,25 @@
 \alias{n_percent}
 \title{Formatted count and percent of levels}
 \usage{
-n_percent(x, digits = 0, NA.show = TRUE, NA.name = "Missing")
+n_percent(
+  x,
+  digits = 0,
+  NA.action = "category",
+  NA.report.complete = "Complete, n (\%)",
+  NA.report.complete.name = "Categories, n (\%)",
+  NA.name = "Missing"
+)
 }
 \arguments{
 \item{x}{A vector, usually factor or character.}
 
 \item{digits}{Number of digits to use when formatting percentages.}
 
-\item{NA.show}{Boolean. Whether to show count of missing values.}
+\item{NA.action}{Character. How to deal with missing values in \code{x}.
+Option \code{"category"} treats \code{NA} as its own level and reports the count. In that case,
+option \code{"NA.name"} controls the name of this category.
+Option \code{"omit"} simply disregards all \code{NA} values. Percentages will be of non-missing entries.
+Option \code{"report.complete"} is like \code{"omit"}, except it reports the number and percentage of complete observations.}
 
 \item{NA.name}{Name of row with count of missing values.}
 }

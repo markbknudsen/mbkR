@@ -49,8 +49,11 @@ summarytable_worker <- function(
   res <- data[, eval(ex), by = .by]
   ncol_identifier <- ncol(res) - length(.by) - 1
   names(res)[ncol(res)] <- ex_name
-  if(.by.NA.drop & !is.null(.by) & any(res[, is.na(get(.by))])){
-    res <- res[!is.na(get(.by))]
+  if(.by.NA.drop & !is.null(.by)){
+    # Must make this check only if !is.null(.by)
+    if(any(res[, is.na(get(.by))])){
+      res <- res[!is.na(get(.by))]
+    }
   }
   else if(!is.null(.by)){
     res[is.na(get(.by)), eval(.by) := .by.NA.name]
