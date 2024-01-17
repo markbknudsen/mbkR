@@ -9,7 +9,7 @@ n_percent(
   digits = 0,
   NA.action = "category",
   NA.report.complete = "Complete, n (\%)",
-  NA.report.complete.name = "Categories, n (\%)",
+  NA.report.complete.name = "Categories, n (\% of complete)",
   NA.name = "Missing"
 )
 }
