@@ -44,7 +44,7 @@ median_quantiles <- function(
     ")"
   )
 
-  if(NA.show & any(is.na(x))){
+  if(NA.show){
     res <- rbind(
       data.table(res)[, .level := NA],
       data.table(
